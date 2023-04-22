@@ -1,0 +1,11 @@
+html { color: #333; }
+.security-wrapper {
+	background-color: var(--o-colors-black-80);
+    color: var(--o-colors-white);
+	padding: 0.5rem;
+	font-weight: 500;
+}
+.negative { color: var(--o-colors-ft-pink); }
+.positive { color: var(--o-colors-wasabi); }
+.ft-right {margin-right: 15px; }
+.ft-white { color: var(--o-colors-white-80); }
