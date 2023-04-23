@@ -10,7 +10,7 @@ This application is simply to retrieve FT security quote api and display UI in j
 
 # Building the Application
 
-Core Application Structure
+** Core Application Structure **
  -  ft-tech
     -   src
         -   css
@@ -78,7 +78,5 @@ To test the application, the test can be found in the `test` folder , which cont
 1. To test the component provided
 
 You can run test with this command `npm test` in your application console/terminal.
-
-This application could be containerised, using docker
 
 Thanks
