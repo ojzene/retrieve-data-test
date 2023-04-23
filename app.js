@@ -5,7 +5,8 @@ const port = process.env.PORT || 3000;
 const { engine }  = require('express-handlebars');
 const jsxEngine = require('./lib/react-server');
 
-const fetchData = require('./src/js/main');
+// import a fetch method from library created to retrieve response from api
+const fetchAPI = require('./lib/fetch-api');
 
 const app = express();
 app.engine('.jsx', jsxEngine);
@@ -22,15 +23,19 @@ app.get('/', (req, res) => {
 * START HERE FOR JSX TEMPLATING
 */
 app.get('/jsx', async (req, res) => {
+  // use symbols as params, and api url as a parameter to retrieve security api
   const symbols = ['FTSE:FSI', 'INX:IOM', 'EURUSD', 'GBPUSD', 'IB.1:IEU'];
   const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;  
-  const retrieveData = await fetchData(apiUrl);
   
+  // get result using the fetch-api method imported 
+  const retrieveData = await fetchAPI(apiUrl);
+
   const templateData = {
     pageTitle: 'Financial Times',
     content: retrieveData
   };
   
+  // get response and pass data to build ui template
   res.render('jsx/Main.jsx', templateData);
 });
 /*
