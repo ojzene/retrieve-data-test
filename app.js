@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 /*
-* START HERE FOR JSX TEMPLATING
+* FOR JSX TEMPLATING
 */
 app.get('/jsx', async (req, res) => {
   // use symbols as params, and api url as a parameter to retrieve security api
@@ -28,11 +28,13 @@ app.get('/jsx', async (req, res) => {
   const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;  
   
   // get result using the fetch-api method imported 
-  const retrieveData = await fetchAPI(apiUrl);
+  const { data } = await fetchAPI(apiUrl);
+
+  console.log(data);
 
   const templateData = {
     pageTitle: 'Financial Times',
-    content: retrieveData
+    content: data
   };
   
   // get response and pass data to build ui template
@@ -42,27 +44,10 @@ app.get('/jsx', async (req, res) => {
 * END JSX TEMPLATING
 */
 
-
-/*
-* START HERE FOR HANDLEBARS TEMPLATING
-*/
-
-app.get('/handlebars', async function (req, res) {
-    // This object is passed to the Handlebars template.
-    const templateData = {
-        pageTitle: 'Financial Times',
-        content: 'Hello World!'
-    };
-
-    // This renders the Handlebars view at `views/home.handlebars`.
-    res.render('handlebars/home', templateData);
-});
-/*
-* END HANDLEBARS TEMPLATING
-*/
-
 if(process.env.NODE_ENV !== 'test') {
-	app.listen(port, () => {console.log(`Running on http://localhost:${port}`)});
+	app.listen(port, () => {
+    console.log(`Running on http://localhost:${port}`)
+  });
 }
 
 // Export the app so that we can test it in `test/app.spec.js`
