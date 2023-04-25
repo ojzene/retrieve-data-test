@@ -26,17 +26,12 @@ app.get('/jsx', async (req, res) => {
   // use symbols as params, and api url as a parameter to retrieve security api
   const symbols = ['FTSE:FSI', 'INX:IOM', 'EURUSD', 'GBPUSD', 'IB.1:IEU'];
   const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;  
-  
   // get result using the fetch-api method imported 
   const { data } = await fetchAPI(apiUrl);
-
-  console.log(data);
-
   const templateData = {
     pageTitle: 'Financial Times',
     content: data
   };
-  
   // get response and pass data to build ui template
   res.render('jsx/Main.jsx', templateData);
 });

@@ -19,16 +19,22 @@
   "author": "Financial Times Ltd.",
   "license": "MIT",
   "dependencies": {
+    "accessibility": "^4.5.6",
+    "core-js": "^3.30.1",
     "express": "^4.17.3",
     "express-handlebars": "^6.0.2",
+    "node-fetch": "^2.6.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "regenerator-runtime": "^0.13.11",
     "sucrase": "^3.28.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^29.5.0",
     "babel-loader": "^8.2.3",
+    "enzyme": "^3.11.0",
     "file-loader": "^6.2.0",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
