@@ -3,12 +3,13 @@
 This application is simply to retrieve FT security quote api and display UI in jsx 
 
 ## Application development
+
 - Backend: NodeJS (Express) 
 - Frontend/Client-side: JSX
 - UI Component: Origami
 - Testing: Jest, Supertest
 
-# Building the Application
+# Building the application
 
 **Core Application Structure**
 -   ft-tech
@@ -30,15 +31,16 @@ This application is simply to retrieve FT security quote api and display UI in j
         -   app.spec.js
         -   main.spec.js
     -   package.json
+    -   webpack.config.js
 
 
 ## Provided API
 
-The API Endpoint used: https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes
+The API Endpoint used: ```https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes```
 
 Query Parameter: ```?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU```
 
-Full API Endpoint is: https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU
+Full API Endpoint is: ```https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU```
 
 For the API Data retrieval, `node-fetch` (^2.6.6) was implemented, it's the native fetch api for NodeJS and has lesser dependencies.
 
@@ -46,7 +48,7 @@ It was chosen also because implementing test with window.fetch default was error
 
 This was imported in the `lib/fetch-api.js` to develop the fetch library, the code snippet can be found below:  
 
-```
+```javascript
 const fetch = require("node-fetch");
 
 const fetchAPI = async (apiUrl="") => {
@@ -76,7 +78,7 @@ Fetch API library was imported in order to retrieve data to be consumed by the f
 
 On the route endpoint:
 
-```
+```javascript
 app.get('/jsx', async (req, res) => {
   const symbols = ['FTSE:FSI', 'INX:IOM', 'EURUSD', 'GBPUSD', 'IB.1:IEU'];
   const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;
@@ -89,9 +91,9 @@ app.get('/jsx', async (req, res) => {
 });
 ```
 
-## Frontend (Client-side) Bulid
+## Frontend (Client-side) Development
 
-- Origami Component Usage 
+- For Origami Component Usage 
 
 It was used to have the look and feel of `https://ft.com`,
 
@@ -128,18 +130,41 @@ $system-code: 'test';
 @include oFonts();
 ```
 
-On the Home Component (`views/jsx/Components/Home.jsx`):
+- For Accessibility Criteria
+  
+To make the application be accessible, `accessibility` (^4.5.6) was implmemented because it's very ease to use, no other dependencies were required (like JQuery).
 
-// Firstly get the props *pageTitle* and *items array* from the backend api and destructed for use
+To install: `npm install accessibility` in the root project in terminal
+
+The accessibility script was placed in src/js/main.js
+
+`import { Accessibility } from 'accessibility/dist/main';`
+
+Included core-js, rengerator-runtime (due of the issue faced as rengerator-runtime wasn't defined):
+
+`npm install --save core-js`
+
+`npm install --save regenerator-runtime`
+
+This was placed at the top of your main js file
+
+`import "core-js/stable";`
+
+`import "regenerator-runtime/runtime";`
+
+
+- On the Home Component (`views/jsx/Components/Home.jsx`):
+
+Firstly get the props *pageTitle* and *items array* from the backend api and destructed for use
 
 ```javascript
 	let { pageTitle, content : { items } } = props
 	let bodyContent;
 ```
 
-// Next is to check if the items array is empty or not,
+Next is to check if the items array is empty or not for `error handling`,
 
-if empty then we can display page title as **Oops!** and content **No data provided from API at the moment...**
+if empty then we can display page title as *Oops!* and content *No data provided from API at the moment...*
 
 if array contains necessary data, we declare a content-mapper method `contentMapper` that maps the array items symbol with corresponding name and respective day's percentage change, after this then we can return a styled class based on the value sign, if negative or not, using a method to check `quoteStyle`.
 
@@ -203,30 +228,6 @@ return (
 ```
 
 
-
-
-- For Accessibility
-To make the application be accessible, `accessibility` (^4.5.6) was implmemented because it's very ease to use, no other dependencies were required (like JQuery).
-
-To install: `npm install accessibility` in the root project in terminal
-
-The accessibility script was placed in src/js/main.js
-
-`import { Accessibility } from 'accessibility/dist/main';`
-
-Included core-js, rengerator-runtime (due of the issue faced as rengerator-runtime wasn't defined):
-
-`npm install --save core-js`
-
-`npm install --save regenerator-runtime`
-
-This was placed at the top of your main js file
-
-`import "core-js/stable";`
-
-`import "regenerator-runtime/runtime";`
-
-
 ## To Run the application
 
 As a pre-requisite: You need to have [Node.js](https://nodejs.org/en/) 16.x installed and 
@@ -244,22 +245,22 @@ its package manager, [npm](https://www.npmjs.com/)
 # Testing the application
 Jest and Supertest was used to do unit testing on the application
 
-The Test can be found in the `test` folder, which contains two(2) files 
+The Test can be found in the `test` folder, which contains two(2) files:
 
-{test/app.spec.js}
+-- test/app.spec.js
 
-{test/main.spec.js}
+-- test/main.spec.js
 
 ## Testing coverage
-[app.spec.js]
+**app.spec.js***
 1. To test provided api when empty params is passed in the url, error returns status 400
 2. To test if quotes API contain full url endpoint to return proper response
 3. To test view /jsx page to render proper html
 4. To check the application endpoint respond with status code 404, if not found
 
-[main.spec.js]
+**main.spec.js**
 1. To test securities object item
 2. To check the day percentage change for a quote value is positive
-3. To check the day percentage change for a quote value is negative
+3. To check the client response symbol input is present
 
 You can run test with this command `npm test` in your application console/terminal.
