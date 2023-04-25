@@ -252,15 +252,16 @@ The Test can be found in the `test` folder, which contains two(2) files:
 -- test/main.spec.js
 
 ## Testing coverage
-**app.spec.js***
-1. To test provided api when empty params is passed in the url, error returns status 400
-2. To test if quotes API contain full url endpoint to return proper response
-3. To test view /jsx page to render proper html
-4. To check the application endpoint respond with status code 404, if not found
+**app.spec.js**
+- To test the express server and return response as html
+- To test provided api when empty params is passed in the url, error returns status 400
+- To test if quotes API contain full url endpoint to return proper response
+- To test view /jsx page to render proper html
+- To check the application endpoint respond with status code 404, if not found
 
 **main.spec.js**
-1. To test securities object item
-2. To check the day percentage change for a quote value is positive
-3. To check the client response symbol input is present
+- To test securities object item
+- To check the day percentage change for a quote value is positive
+- To check the client response symbol input is present
 
 You can run test with this command `npm test` in your application console/terminal.
