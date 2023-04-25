@@ -11,25 +11,25 @@ This application is simply to retrieve FT security quote api and display UI in j
 # Building the Application
 
 *Core Application Structure*
--ft-tech
-    -src
-        -css
-            -styles.scss
-        -js
-            -main.js
-    -lib
-        -fetch-api.js
-    -app.js
-    -jsx
-        -Components
-            -Home.jsx 
-        -Main.jsx
-    -test
-        -fixtures
-            -securities-response.json
-        -app.spec.js
-        -main.spec.js
-    -package.json
+-   ft-tech
+    -   src
+        -   css
+            -   styles.scss
+        -   js
+            -   main.js
+    -   lib
+        -   fetch-api.js
+    -   app.js
+    -   jsx
+        -   Components
+            -   Home.jsx 
+        -   Main.jsx
+    -   test
+        -   fixtures
+            -   securities-response.json
+        -   app.spec.js
+        -   main.spec.js
+    -   package.json
 
 
 ## API
@@ -38,6 +38,30 @@ The API Endpoint used: https://markets-data-api-proxy.ft.com/research/webservice
 Query Parameter: '?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU'
 
 Full API Endpoint is: https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU
+
+For the API Data retrieval, `node-fetch` (^2.6.6) was implemented, it's the native fetch api for NodeJS and has lesser dependencies.
+It was chosen also because implementing test with window.fetch default was error-prone, also easy to implement which makes it best option.
+
+## Server Side
+
+In the app.js file, which contains the /jsx route for the api working.
+
+Fetch API library was imported in order to retrieve data to be consumed by the frontend
+
+`const fetchAPI = require('./lib/fetch-api');`
+
+On the route:
+
+`app.get('/jsx', async (req, res) => {`
+` const symbols = ['FTSE:FSI', 'INX:IOM', 'EURUSD', 'GBPUSD', 'IB.1:IEU']; `
+` const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`; `
+` const { data } = await fetchAPI(apiUrl); `
+` const templateData = { `
+`   pageTitle: 'Financial Times', `
+`   content: data `
+` }; `
+` res.render('jsx/Main.jsx', templateData); `
+`});`
 
 
 ## Frontend (Client-side) Bulid
@@ -87,8 +111,9 @@ The components were being imported in style file (src/css/styles.scss) and imple
 
 
 - For Accessibility
-To make the page accessible, the accessibility library was included from `https://www.npmjs.com/package/accessibility`
-Installation was done: `npm install accessibility`
+To make the application be accessible, `accessibility` (^4.5.6) was implmemented because it's very ease to use, no other dependencies were required (like JQuery).
+
+To install: `npm install accessibility` in the root project in terminal
 
 The accessibility script was placed in src/js/main.js
 
