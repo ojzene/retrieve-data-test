@@ -10,7 +10,7 @@ This application is simply to retrieve FT security quote api and display UI in j
 
 # Building the Application
 
-*Core Application Structure*
+**Core Application Structure**
 -   ft-tech
     -   src
         -   css
@@ -32,15 +32,39 @@ This application is simply to retrieve FT security quote api and display UI in j
     -   package.json
 
 
-## API
+## Provided API
+
 The API Endpoint used: https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes
 
-Query Parameter: '?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU'
+Query Parameter: ```?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU```
 
 Full API Endpoint is: https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=FTSE:FSI,INX:IOM,EURUSD,GBPUSD,IB.1:IEU
 
 For the API Data retrieval, `node-fetch` (^2.6.6) was implemented, it's the native fetch api for NodeJS and has lesser dependencies.
+
 It was chosen also because implementing test with window.fetch default was error-prone, also easy to implement which makes it best option.
+
+This was imported in the `lib/fetch-api.js` to develop the fetch library, the code snippet can be found below:  
+
+```
+const fetch = require("node-fetch");
+
+const fetchAPI = async (apiUrl="") => {
+    try {
+        if (apiUrl !== '' || apiUrl.length !== 0) {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            const result = data;
+            return result;
+        } 
+        throw Error("Please provide url!");
+    } catch (error) {
+        const { message } = error;
+        return { message };
+    }
+}
+module.exports = fetchAPI;
+```
 
 ## Server Side
 
@@ -50,24 +74,20 @@ Fetch API library was imported in order to retrieve data to be consumed by the f
 
 `const fetchAPI = require('./lib/fetch-api');`
 
-On the route:
+On the route endpoint:
 
 ```
 app.get('/jsx', async (req, res) => {
-  // use symbols as params, and api url as a parameter to retrieve security api
   const symbols = ['FTSE:FSI', 'INX:IOM', 'EURUSD', 'GBPUSD', 'IB.1:IEU'];
-  const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;  
-  // get result using the fetch-api method imported 
+  const apiUrl = `https://markets-data-api-proxy.ft.com/research/webservices/securities/v1/quotes?symbols=${symbols.join(',')}`;
   const { data } = await fetchAPI(apiUrl);
   const templateData = {
     pageTitle: 'Financial Times',
     content: data
   };
-  // get response and pass data to build ui template
   res.render('jsx/Main.jsx', templateData);
 });
 ```
-
 
 ## Frontend (Client-side) Bulid
 
@@ -81,7 +101,7 @@ It was included the origami components via npm install as a peer dependencies se
 
 Placed in the package.json as:
 
-`
+```
 "peerDependencies": {
     "@financial-times/o-colors": "^6.4.4",
     "@financial-times/o-fonts": "^5.3.4",
@@ -89,30 +109,100 @@ Placed in the package.json as:
     "@financial-times/o-spacing": "^3.2.2",
     "@financial-times/o-typography": "^7.3.5"
 }
-`
-The components were being imported in style file (src/css/styles.scss) and implemented in the Home Component:
+```
 
-`$system-code: 'test';
+The components were being imported in style file (`src/css/styles.scss`) and implemented in the Home Component:
 
+```
+$system-code: 'test';
 @import '@financial-times/o-grid/main';
-
 @import '@financial-times/o-colors/main';
-
 @import '@financial-times/o-typography/main';
-
 @import '@financial-times/o-spacing/main';
-
 @import '@financial-times/o-fonts/main';
 
 @include oGrid();
-
 @include oColors();
-
 @include oTypography();
-
 @include oSpacing();
+@include oFonts();
+```
 
-@include oFonts();`
+On the Home Component (`views/jsx/Components/Home.jsx`):
+
+// Firstly get the props *pageTitle* and *items array* from the backend api and destructed for use
+
+```javascript
+	let { pageTitle, content : { items } } = props
+	let bodyContent;
+```
+
+// Next is to check if the items array is empty or not,
+
+if empty then we can display page title as **Oops!** and content **No data provided from API at the moment...**
+
+if array contains necessary data, we declare a content-mapper method `contentMapper` that maps the array items symbol with corresponding name and respective day's percentage change, after this then we can return a styled class based on the value sign, if negative or not, using a method to check `quoteStyle`.
+
+```javascript
+    if (items.length <= 0) {
+        pageTitle = 'Oops!';
+        bodyContent = 'No data provided from API at the moment...'
+    } else {
+        const mappedBody = contentMapper(items, securityObj);
+        bodyContent = mappedBody.map((security, idx) => {
+            return (
+                <span className="o-text-right o-typography-heading-level-4" key={idx}>
+                    <span className="o-colors-white"> {security.name} </span> 
+                    <span className={quoteStyle(security.value)}> {security.value} </span>
+                </span>
+            )
+        });
+    }
+```
+
+Content Mapper Method:
+
+```javascript
+const contentMapper = (items, symbolObj) => {
+    const mappedList = items.map(symbol => {
+        const quoteObj = { name: '', value: '' };
+        const security = symbolObj[symbol.symbolInput];
+        const percentageChange = security ? symbol.quote.change1DayPercent.toFixed(2) : '';
+        quoteObj.name = security;
+        quoteObj.value =  `${percentageChange}%`;
+        return quoteObj;
+    });
+    return mappedList;
+}
+```
+
+Class-style value sign method:
+
+```javascript
+const quoteStyle = (value) => {
+    return (Math.sign(value.split('%')[0]) >= 0)  ? 'o-colors-positive': 'o-colors-negative';
+}
+```
+
+After this is done we can properly render the view
+
+Render the view:
+
+```javascript
+return (
+    <div className="o-grid-container">
+        <div className="o-spacing-s8"></div>
+        <div className="o-typography-heading-level-1 o-spacing-s6">{pageTitle}</div>
+        <div className="o-security-wrapper o-grid-row o-typography-wrapper">
+            <div data-o-grid-colspan="2 M12">
+                {bodyContent}
+            </div>
+        </div>
+    </div>
+);
+```
+
+
 
 
 - For Accessibility
@@ -139,7 +229,7 @@ This was placed at the top of your main js file
 
 ## To Run the application
 
-As a prerequisite: You need to have [Node.js](https://nodejs.org/en/) 16.x installed and 
+As a pre-requisite: You need to have [Node.js](https://nodejs.org/en/) 16.x installed and 
 its package manager, [npm](https://www.npmjs.com/)
 
 - Open your terminal
@@ -172,7 +262,4 @@ The Test can be found in the `test` folder, which contains two(2) files
 2. To check the day percentage change for a quote value is positive
 3. To check the day percentage change for a quote value is negative
 
-
 You can run test with this command `npm test` in your application console/terminal.
-
-Thanks
