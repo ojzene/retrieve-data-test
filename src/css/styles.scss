@@ -1,11 +1,25 @@
-html { color: #333; }
-.security-wrapper {
+$system-code: 'test';
+@import '@financial-times/o-grid/main';
+@import '@financial-times/o-colors/main';
+@import '@financial-times/o-typography/main';
+@import '@financial-times/o-spacing/main';
+@import '@financial-times/o-fonts/main';
+
+@include oGrid();
+@include oColors();
+@include oTypography();
+@include oSpacing();
+@include oFonts();
+
+body {
+	background-color: oColorsByUsecase('page', 'background');
+}
+.o-security-wrapper {
 	background-color: var(--o-colors-black-80);
     color: var(--o-colors-white);
-	padding: 0.5rem;
-	font-weight: 500;
+	padding: calc(var(--o-spacing-baseline) * 3);
 }
-.negative { color: var(--o-colors-ft-pink); }
-.positive { color: var(--o-colors-wasabi); }
-.ft-right {margin-right: 15px; }
-.ft-white { color: var(--o-colors-white-80); }
+.o-colors-negative { color: var(--o-colors-candy); }
+.o-colors-positive { color: var(--o-colors-wasabi); }
+.o-colors-white { color: var(--o-colors-white-80); }
+.o-text-right { margin-right: 15px; }
